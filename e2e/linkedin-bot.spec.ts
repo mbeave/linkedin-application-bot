@@ -37,7 +37,7 @@ test('test', async ({ page }) => {
 //   }
   console.log("Beginning applications...");
   var jobsApplied = 0;
-  for (let h = 10; h < parseInt(pages); h++) {
+  for (let h = 0; h < parseInt(pages); h++) {
     if (h != 0) {
         let jobPage = jobsPerPage * h;
         console.log("Moving to next page...");
@@ -47,6 +47,8 @@ test('test', async ({ page }) => {
     }
     for (let i = 0; i < 24; i++) {
         try {
+            await page.hover('.jobs-search-results-list');
+            await page.mouse.wheel(0, 250);
             await page.locator('.job-card-list__title').nth(i).click();
             if (await page.isVisible('span.artdeco-button__text:has-text("Easy Apply")')) {
                 await page.locator('span:has-text("Easy Apply")').first().click();
