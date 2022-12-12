@@ -1,0 +1,6 @@
+//create a login.ts file with this information. You can then delete this .tmp file.
+
+const email = "email"; //replace 'email' with your email; keep it as a string though
+const password = "password"; //replace 'password' with your password; keep it as a string though
+
+export { email, password };
