@@ -73,6 +73,7 @@ test('test', async ({ page }) => {
 
             if (progressValue == "50") {  
                 try {
+                    await page.locator('span:has-text("Choose")').first().click();
                     await page.locator('span:has-text("Review")').first().first().click();
                     await page.locator('label:has-text("Follow")').click();
                     await page.locator('text=Submit Application').click();
@@ -88,6 +89,7 @@ test('test', async ({ page }) => {
             }
             else if (progressValue == "33") {
                 try {
+                    await page.locator('span:has-text("Choose")').first().click();
                     await page.locator('span:has-text("Next")').first().click();
                     await page.locator('span:has-text("Review")').first().first().click();
                     if (await page.isVisible('text=Please enter a valid answer')) {
@@ -112,6 +114,7 @@ test('test', async ({ page }) => {
             }
             else if (progressValue == "25") {
                 try {
+                    await page.locator('span:has-text("Choose")').first().click();
                     await page.locator('span:has-text("Next")').first().click();
                     if (await page.isVisible('text=Please enter a valid answer')) {
                         let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
@@ -130,6 +133,7 @@ test('test', async ({ page }) => {
                         await page.locator('span:has-text("Discard")').click();
                         continue;
                     }
+                    await page.locator('span:has-text("Choose")').first().click();
                     await page.locator('span:has-text("Review")').first().click();
                     await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                     await page.locator('text=Submit Application').click();
