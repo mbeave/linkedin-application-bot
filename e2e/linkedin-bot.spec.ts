@@ -133,7 +133,6 @@ test('test', async ({ page }) => {
                         await page.locator('span:has-text("Discard")').click();
                         continue;
                     }
-                    await page.locator('span:has-text("Choose")').first().click();
                     await page.locator('span:has-text("Review")').first().click();
                     await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                     await page.locator('text=Submit Application').click();
