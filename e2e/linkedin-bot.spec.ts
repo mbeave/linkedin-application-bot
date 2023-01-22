@@ -60,7 +60,7 @@ test('test', async ({ page }) => {
             
             page.waitForTimeout(8000);
             if (await page.isVisible('span.artdeco-button__text:has-text("Submit")')) {
-                await page.locator('label:has-text("Follow")').click();
+                await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                 await page.locator('text=Submit Application').click();
                 console.log("Job applied!");
                 jobsApplied++;
@@ -75,7 +75,7 @@ test('test', async ({ page }) => {
                 try {
                     await page.locator('span:has-text("Choose")').first().click();
                     await page.locator('span:has-text("Review")').first().first().click();
-                    await page.locator('label:has-text("Follow")').click();
+                    await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                     await page.locator('text=Submit Application').click();
                     console.log("Job applied!");
                     jobsApplied++;
@@ -100,7 +100,7 @@ test('test', async ({ page }) => {
                         await page.locator('span:has-text("Discard")').click();
                         continue;
                     }
-                    await page.locator('label:has-text("Follow")').click();
+                    await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                     await page.locator('text=Submit Application').click();
                     console.log("Job applied!");
                     jobsApplied++;
