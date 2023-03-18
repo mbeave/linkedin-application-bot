@@ -42,7 +42,7 @@ const config: PlaywrightTestConfig = {
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     launchOptions: {
-      slowMo: Math.floor(Math.random()*2000) + 4000,
+      slowMo: Math.floor(Math.random()*2000) + 2000,
     },
     storageState: 'storageState.json',
   },

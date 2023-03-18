@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
-  let searchTerm = "help%20desk"; //replace spaces in your search terms and location with "%20" for building the url's; for instance, "React Developer" would be "React%20Developer"
+  let searchTerm = "web%20developer"; //replace spaces in your search terms and location with "%20" for building the url's; for instance, "React Developer" would be "React%20Developer"
   let easyApply = "?f_AL=true";
   let location = "United%20States"; 
   let remote = "&f_WT=2&geoId=103644278";
@@ -15,13 +15,13 @@ test('test', async ({ page }) => {
   //await page.keyboard.press('Enter');
   //await page.locator('button:has-text("help desk United States · Easy Apply · Remote")').click();
   
-  await page.locator('.jobs-search-results__list-item').last().scrollIntoViewIfNeeded();
+  //await page.locator('.jobs-search-results__list-item').last().scrollIntoViewIfNeeded();
   await page.hover('.jobs-search-results-list');
   for (let i = 0; i < 7; i++) {
-    await page.mouse.wheel(0, 500);
-    if (await page.isVisible('.jobs-search-results__list-item')) {
-        break;
-    }
+    await page.mouse.wheel(0, 400);
+    // if (await page.isVisible('.artdeco-pagination__indicator')) {
+    //     break;
+    // }
   }
 
   let pages = await page.locator('ul.artdeco-pagination__pages .artdeco-pagination__indicator').last().innerText();
@@ -37,18 +37,29 @@ test('test', async ({ page }) => {
 //   }
   console.log("Beginning applications...");
   var jobsApplied = 0;
+  var maxJobsApplied = 10;
+  var jobsOnPage = 24;
   for (let h = 0; h < parseInt(pages); h++) {
+    if (jobsApplied > maxJobsApplied) {
+        break;
+    }
     if (h != 0) {
         let jobPage = jobsPerPage * h;
         console.log("Moving to next page...");
         //await page.locator('ul.artdeco-pagination__pages > li').nth(h).click();
-        var url = url + "&start=" + jobPage;
+        url = url + "&start=" + jobPage;
         await page.goto(url);
+        await page.hover('.jobs-search-results-list');
+        for (let i = 0; i < 7; i++) {
+            await page.mouse.wheel(0, 400);
+        }
     }
-    for (let i = 0; i < 24; i++) {
+    jobsOnPage = await page.locator('.job-card-list__title').count();
+    console.log(jobsOnPage + " jobs on this page");
+    for (let i = 0; i < jobsOnPage; i++) {
         try {
             await page.hover('.jobs-search-results-list');
-            await page.mouse.wheel(0, 250);
+            await page.mouse.wheel(0, 200);
             await page.locator('.job-card-list__title').nth(i).click();
             if (await page.isVisible('span.artdeco-button__text:has-text("Easy Apply")')) {
                 await page.locator('span:has-text("Easy Apply")').first().click();
@@ -60,6 +71,7 @@ test('test', async ({ page }) => {
             
             page.waitForTimeout(8000);
             if (await page.isVisible('span.artdeco-button__text:has-text("Submit")')) {
+                await page.locator('span:has-text("Choose")').first().click();
                 await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                 await page.locator('text=Submit Application').click();
                 console.log("Job applied!");
@@ -114,7 +126,7 @@ test('test', async ({ page }) => {
             }
             else if (progressValue == "25") {
                 try {
-                    await page.locator('span:has-text("Choose")').first().click();
+                    await page.locator('span:has-text("Choose")').first().click({timeout: 10000});
                     await page.locator('span:has-text("Next")').first().click();
                     if (await page.isVisible('text=Please enter a valid answer')) {
                         let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
