@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
   var totalJobsApplied = 0;
-  const searchTermArray = ["wordpress", "qa", "Sql","helpdesk", "web%20developer", "react"];
+  const searchTermArray = ["web%20developer", "react", "help%20desk"];
 
   for (let g = 0; g < searchTermArray.length; g++) {
-    let searchTerm = "sql"; //replace spaces in your search terms and location with "%20" for building the url's; for instance, "React Developer" would be "React%20Developer"
+    let searchTerm = searchTermArray[g]; //replace spaces in your search terms and location with "%20" for building the url's; for instance, "React Developer" would be "React%20Developer"
     let easyApply = "?f_AL=true";
     let location = "United%20States"; 
     let remote = "&f_WT=2&geoId=103644278";
@@ -41,7 +41,7 @@ test('test', async ({ page }) => {
   //   }
     console.log("Beginning applications...");
     var jobsApplied = 0;
-    var maxJobsApplied = 200;
+    var maxJobsApplied = 25;
     var jobsOnPage = 24;
     for (let h = 0; h < parseInt(pages); h++) {
       if (jobsApplied > maxJobsApplied) {
@@ -51,6 +51,7 @@ test('test', async ({ page }) => {
       }
       if (h != 0) {
           let jobPage = jobsPerPage * h;
+          console.log("You've applied to " + totalJobsApplied + " jobs!");
           console.log("Moving to next page...");
           //await page.locator('ul.artdeco-pagination__pages > li').nth(h).click();
           url = url + "&start=" + jobPage;
@@ -77,11 +78,11 @@ test('test', async ({ page }) => {
               
               page.waitForTimeout(8000);
               if (await page.isVisible('span.artdeco-button__text:has-text("Submit")')) {
-                  await page.locator('span:has-text("Choose")').first().click();
+                  //await page.locator('span:has-text("Choose")').first().click();
                   await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                   await page.locator('text=Submit Application').click();
                   console.log("Job applied!");
-                  jobsApplied++;
+                  await jobsApplied++;
                   await page.locator('.artdeco-button__icon').first().click();
                   continue;
               }
@@ -91,12 +92,12 @@ test('test', async ({ page }) => {
   
               if (progressValue == "50") {  
                   try {
-                      await page.locator('span:has-text("Choose")').first().click();
+                      //await page.locator('span:has-text("Choose")').first().click();
                       await page.locator('span:has-text("Review")').first().first().click();
                       await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                       await page.locator('text=Submit Application').click();
                       console.log("Job applied!");
-                      jobsApplied++;
+                      await jobsApplied++;
                       await page.locator('.artdeco-button__icon').first().click();
                   } catch (e) {
                       await page.locator('.artdeco-button__icon').first().click();
@@ -107,7 +108,7 @@ test('test', async ({ page }) => {
               }
               else if (progressValue == "33") {
                   try {
-                      await page.locator('span:has-text("Choose")').first().click();
+                      //await page.locator('span:has-text("Choose")').first().click();
                       await page.locator('span:has-text("Next")').first().click();
                       await page.locator('span:has-text("Review")').first().first().click();
                       if (await page.isVisible('text=Please enter a valid answer')) {
@@ -121,7 +122,7 @@ test('test', async ({ page }) => {
                       await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                       await page.locator('text=Submit Application').click();
                       console.log("Job applied!");
-                      jobsApplied++;
+                      await jobsApplied++;
                       await page.locator('.artdeco-button__icon').first().click();
                   } catch (e) {
                       await page.locator('.artdeco-button__icon').first().click();
@@ -132,7 +133,7 @@ test('test', async ({ page }) => {
               }
               else if (progressValue == "25") {
                   try {
-                      await page.locator('span:has-text("Choose")').first().click({timeout: 10000});
+                      //await page.locator('span:has-text("Choose")').first().click({timeout: 10000});
                       await page.locator('span:has-text("Next")').first().click();
                       if (await page.isVisible('text=Please enter a valid answer')) {
                           let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
@@ -155,7 +156,7 @@ test('test', async ({ page }) => {
                       await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
                       await page.locator('text=Submit Application').click();
                       console.log("Job applied!");
-                      jobsApplied++;
+                      await jobsApplied++;
                       await page.locator('.artdeco-button__icon').first().click();
                   } catch (e) {
                       await page.locator('.artdeco-button__icon').first().click();
