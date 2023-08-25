@@ -1,6 +1,8 @@
 // global-setup.ts
 import { chromium, FullConfig } from '@playwright/test';
-import { email, password } from './login';
+
+const email = process.env.EMAIL as string;
+const password = process.env.PASSWORD as string;
 
 async function globalSetup(config: FullConfig) {
   const browser = await chromium.launch();

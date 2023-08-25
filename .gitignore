@@ -8,3 +8,4 @@ node_modules/
 storageState.json
 auth.json
 login.ts
+.env

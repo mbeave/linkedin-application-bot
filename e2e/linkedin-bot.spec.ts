@@ -1,11 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test('test', async ({ page }) => {
   var totalJobsApplied = 0;
-  const searchTermArray = ["web%20developer", "react", "help%20desk"];
+  const searchTermArray = process.env.SEARCHTERMS as string;
 
   for (let g = 0; g < searchTermArray.length; g++) {
-    let searchTerm = searchTermArray[g]; //replace spaces in your search terms and location with "%20" for building the url's; for instance, "React Developer" would be "React%20Developer"
+    let searchTerm = searchTermArray[g]; 
     let easyApply = "?f_AL=true";
     let location = "United%20States"; 
     let remote = "&f_WT=2&geoId=103644278";
