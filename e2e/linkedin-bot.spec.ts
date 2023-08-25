@@ -111,7 +111,7 @@ test('test', async ({ page }) => {
                       //await page.locator('span:has-text("Choose")').first().click();
                       await page.locator('span:has-text("Next")').first().click();
                       await page.locator('span:has-text("Review")').first().first().click();
-                      if (await page.isVisible('text=Please enter a valid answer')) {
+                      if (await page.isVisible('span.artdeco-inline-feedback__message')) {
                           let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
                           let href = "https://www.linkedin.com/jobs/view/" + jobID;
                           console.log("Couldn't apply to job! Apply here: " + href);
@@ -135,7 +135,7 @@ test('test', async ({ page }) => {
                   try {
                       //await page.locator('span:has-text("Choose")').first().click({timeout: 10000});
                       await page.locator('span:has-text("Next")').first().click();
-                      if (await page.isVisible('text=Please enter a valid answer')) {
+                      if (await page.isVisible('span.artdeco-inline-feedback__message')) {
                           let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
                           let href = "https://www.linkedin.com/jobs/view/" + jobID;
                           console.log("Couldn't apply to job! Apply here: " + href);
@@ -144,7 +144,7 @@ test('test', async ({ page }) => {
                           continue;
                       }
                       await page.locator('span:has-text("Next")').first().click();
-                      if (await page.isVisible('text=Please enter a valid answer')) {
+                      if (await page.isVisible('span.artdeco-inline-feedback__message')) {
                           let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
                           let href = "https://www.linkedin.com/jobs/view/" + jobID;
                           console.log("Couldn't apply to job! Apply here: " + href);
