@@ -9,3 +9,4 @@ storageState.json
 auth.json
 login.ts
 .env
+config.json

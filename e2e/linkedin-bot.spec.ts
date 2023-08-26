@@ -1,14 +1,24 @@
 import { test } from '@playwright/test';
+const fs = require('fs');
+
+const configFile = fs.readFileSync('config.json', 'utf-8');
+const config = JSON.parse(configFile);
 
 test('test', async ({ page }) => {
   var totalJobsApplied = 0;
-  const searchTermArray = process.env.SEARCHTERMS as string;
+  const searchTermArray = config.searchTerms;
+  
+  let remote = "";
+  if (config.remote == true) {
+    remote = "&f_WT=2&geoId=103644278";
+  } else {
+    remote = "&geoId=103644278";
+  }
 
   for (let g = 0; g < searchTermArray.length; g++) {
     let searchTerm = searchTermArray[g]; 
     let easyApply = "?f_AL=true";
-    let location = "United%20States"; 
-    let remote = "&f_WT=2&geoId=103644278";
+    let location = config.location; 
     const jobsPerPage = 25;
   
     var url = "https://www.linkedin.com/jobs/search/" + easyApply + remote + "&keywords=" + searchTerm + "&location=" + location;
@@ -35,10 +45,10 @@ test('test', async ({ page }) => {
     //   }    
     // })
     console.log("There are " + pages + " pages of jobs to apply to.");
-  //   await page.hover('.jobs-search__left-rail');
-  //   for (let i = 0; i < 7; i++) {
-  //     await page.mouse.wheel(0, -500);
-  //   }
+    //   await page.hover('.jobs-search__left-rail');
+    //   for (let i = 0; i < 7; i++) {
+    //     await page.mouse.wheel(0, -500);
+    //   }
     console.log("Beginning applications...");
     var jobsApplied = 0;
     var maxJobsApplied = 25;

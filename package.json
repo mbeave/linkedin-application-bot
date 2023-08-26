@@ -9,5 +9,8 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.23.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
   }
 }
