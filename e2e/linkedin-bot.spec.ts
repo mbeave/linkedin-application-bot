@@ -84,8 +84,8 @@ test('linkedin app bot', async ({ page }) => {
           await page.mouse.wheel(0, 200);
           await page.locator('.job-card-list__title').nth(i).click();
           if (await page.isVisible('span.artdeco-button__text:has-text("Easy Apply")')) {
-            jobTitle = await page.locator('.jobs-unified-top-card__job-title').first().innerText();
-            companyTitle = await page.locator('.jobs-unified-top-card__primary-description > div > a').innerText();
+            jobTitle = await page.locator('.jobs-unified-top-card__job-title').first().innerText({timeout: 10000});
+            companyTitle = await page.locator('.jobs-unified-top-card__primary-description > div > a').innerText({timeout: 10000});
             await page.locator('span:has-text("Easy Apply")').first().click();
           }
           else {
