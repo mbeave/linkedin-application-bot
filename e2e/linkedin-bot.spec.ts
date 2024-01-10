@@ -58,6 +58,7 @@ test('linkedin app bot', async ({ page }) => {
     var jobsOnPage = 24;
     var jobTitle = "";
     var companyTitle = "";
+    var companyTitleRegex = /^(.*?) ·/;
     for (let h = 0; h < parseInt(pages); h++) {
       if (jobsApplied > maxJobsApplied) {
         console.log("You applied to " + jobsApplied + " " + searchTerm + " jobs!");
@@ -84,8 +85,10 @@ test('linkedin app bot', async ({ page }) => {
           await page.mouse.wheel(0, 200);
           await page.locator('.job-card-list__title').nth(i).click();
           if (await page.isVisible('span.artdeco-button__text:has-text("Easy Apply")')) {
-            jobTitle = await page.locator('.jobs-unified-top-card__job-title').first().innerText({timeout: 10000});
-            companyTitle = await page.locator('.jobs-unified-top-card__primary-description > div > a').innerText({timeout: 10000});
+            jobTitle = await page.locator('.job-details-jobs-unified-top-card__job-title-link').first().innerText({timeout: 10000});
+            companyTitle = await page.locator('.job-details-jobs-unified-top-card__primary-description-without-tagline').first().innerText({timeout: 10000});
+            const match = companyTitle.match(companyTitleRegex);
+            if (match != null) companyTitle = match[1];
             await page.locator('span:has-text("Easy Apply")').first().click();
           }
           else {
