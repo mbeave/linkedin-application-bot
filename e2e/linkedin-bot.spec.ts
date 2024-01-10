@@ -85,8 +85,8 @@ test('linkedin app bot', async ({ page }) => {
           await page.mouse.wheel(0, 200);
           await page.locator('.job-card-list__title').nth(i).click();
           if (await page.isVisible('span.artdeco-button__text:has-text("Easy Apply")')) {
-            jobTitle = await page.locator('.job-details-jobs-unified-top-card__job-title-link').first().innerText({timeout: 10000});
-            companyTitle = await page.locator('.job-details-jobs-unified-top-card__primary-description-without-tagline').first().innerText({timeout: 10000});
+            jobTitle = await page.locator('.job-details-jobs-unified-top-card__job-title-link').first().innerText({timeout: 5000});
+            companyTitle = await page.locator('.job-details-jobs-unified-top-card__primary-description-without-tagline').first().innerText({timeout: 5000});
             const match = companyTitle.match(companyTitleRegex);
             if (match != null) companyTitle = match[1];
             await page.locator('span:has-text("Easy Apply")').first().click();
@@ -99,7 +99,7 @@ test('linkedin app bot', async ({ page }) => {
           page.waitForTimeout(8000);
           if (await page.isVisible('span.artdeco-button__text:has-text("Submit")')) {
             //await page.locator('span:has-text("Choose")').first().click();
-            await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
+            await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
             await page.locator('text=Submit Application').click();
             console.log("Job applied!");
             await jobsApplied++;
@@ -115,7 +115,7 @@ test('linkedin app bot', async ({ page }) => {
             try {
               //await page.locator('span:has-text("Choose")').first().click();
               await page.locator('span:has-text("Review")').first().first().click();
-              await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
+              await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
               await page.locator('text=Submit Application').click();
               console.log("Job applied!");
               await jobsApplied++;
@@ -141,7 +141,7 @@ test('linkedin app bot', async ({ page }) => {
                 await page.locator('span:has-text("Discard")').click();
                 continue;
               }
-              await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
+              await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
               await page.locator('text=Submit Application').click();
               console.log("Job applied!");
               await jobsApplied++;
@@ -156,7 +156,7 @@ test('linkedin app bot', async ({ page }) => {
           }
           else if (progressValue == "25") {
             try {
-              //await page.locator('span:has-text("Choose")').first().click({timeout: 10000});
+              //await page.locator('span:has-text("Choose")').first().click({timeout: 5000});
               await page.locator('span:has-text("Next")').first().click();
               if (await page.isVisible('span.artdeco-inline-feedback__message')) {
                 let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
@@ -176,7 +176,7 @@ test('linkedin app bot', async ({ page }) => {
                 continue;
               }
               await page.locator('span:has-text("Review")').first().click();
-              await page.locator('label:has-text("Follow")').click({ timeout: 10000 });
+              await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
               await page.locator('text=Submit Application').click();
               console.log("Job applied!");
               await jobsApplied++;
