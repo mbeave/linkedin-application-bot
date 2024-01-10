@@ -99,8 +99,8 @@ test('linkedin app bot', async ({ page }) => {
           page.waitForTimeout(8000);
           if (await page.isVisible('span.artdeco-button__text:has-text("Submit")')) {
             //await page.locator('span:has-text("Choose")').first().click();
-            await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
-            await page.locator('text=Submit Application').click();
+            try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
+            await page.locator('text=Submit Application').click({ timeout: 5000 });
             console.log("Job applied!");
             await jobsApplied++;
             await page.locator('.artdeco-button__icon').first().click();
@@ -115,8 +115,8 @@ test('linkedin app bot', async ({ page }) => {
             try {
               //await page.locator('span:has-text("Choose")').first().click();
               await page.locator('span:has-text("Review")').first().first().click();
-              await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
-              await page.locator('text=Submit Application').click();
+              try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
+              await page.locator('text=Submit Application').click({ timeout: 5000 });
               console.log("Job applied!");
               await jobsApplied++;
               await page.locator('.artdeco-button__icon').first().click();
@@ -141,8 +141,8 @@ test('linkedin app bot', async ({ page }) => {
                 await page.locator('span:has-text("Discard")').click();
                 continue;
               }
-              await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
-              await page.locator('text=Submit Application').click();
+              try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
+              await page.locator('text=Submit Application').click({ timeout: 5000 });
               console.log("Job applied!");
               await jobsApplied++;
               await page.locator('.artdeco-button__icon').first().click();
@@ -176,8 +176,8 @@ test('linkedin app bot', async ({ page }) => {
                 continue;
               }
               await page.locator('span:has-text("Review")').first().click();
-              await page.locator('label:has-text("Follow")').click({ timeout: 5000 });
-              await page.locator('text=Submit Application').click();
+              try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
+              await page.locator('text=Submit Application').click({ timeout: 5000 });
               console.log("Job applied!");
               await jobsApplied++;
               await page.locator('.artdeco-button__icon').first().click();
@@ -223,4 +223,9 @@ async function csvWriteLine(date: string, location: string, searchTerm: string, 
       console.log('Job data saved.');
     }
   });
+}
+
+async function unfollow(page) {
+  try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
+
 }
