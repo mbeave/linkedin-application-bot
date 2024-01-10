@@ -10,3 +10,4 @@ auth.json
 login.ts
 .env
 config.json
+jobsApplied.csv
