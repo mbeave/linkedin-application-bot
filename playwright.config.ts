@@ -11,7 +11,7 @@ require('dotenv').config();
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-  globalSetup: require.resolve('./global-setup'),
+  // globalSetup: require.resolve('./global-setup'),
   testDir: './e2e',
   /* Maximum time one test can run for. */
   timeout: 60 * 1000 * 60 * 3,
@@ -42,9 +42,9 @@ const config: PlaywrightTestConfig = {
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     launchOptions: {
-      slowMo: Math.floor(Math.random()*2000) + 2000,
+      slowMo: Math.floor(Math.random()*2000) + 1000,
     },
-    storageState: 'storageState.json',
+    // storageState: 'storageState.json',
   },
 
   /* Configure projects for major browsers */

@@ -1,13 +1,17 @@
 import { test } from '@playwright/test';
+import { JobSearch } from './pageActions';
 const fs = require('fs');
+
+const email = process.env.EMAIL as string;
+const password = process.env.PASSWORD as string;
 
 const configFile = fs.readFileSync('config.json', 'utf-8');
 const config = JSON.parse(configFile);
-const filePath = config.csvFilePath;
-const d = new Date();
-const date = d.getMonth() + 1 + "/" + d.getDate() + "/" + d.getFullYear();
 
-test('linkedin app bot', async ({ page }) => {
+test('linkedin app bot', async ({ browser }) => {
+  // const context = await browser.newContext({ storageState: 'storageState.json' });
+  // const page = await context.newPage();
+  const page = await browser.newPage();
   var totalJobsApplied = 0;
   const searchTermArray = config.searchTerms;
   
@@ -20,45 +24,36 @@ test('linkedin app bot', async ({ page }) => {
 
   for (let g = 0; g < searchTermArray.length; g++) {
     let searchTerm = searchTermArray[g]; 
-    let easyApply = "?f_AL=true";
-    let location = config.location; 
     const jobsPerPage = 25;
-  
-    var url = "https://www.linkedin.com/jobs/search/" + easyApply + remote + "&keywords=" + searchTerm + "&location=" + location;
-    
+
+    var url = "https://www.linkedin.com/";
+
     await page.goto(url);
     
-    //await page.locator('.jobs-search-box__keyboard-text-input').nth(0).type(searchTerm);
-    //await page.keyboard.press('Enter');
-    //await page.locator('button:has-text("help desk United States · Easy Apply · Remote")').click();
+    try {await page.getByRole('button', { name: 'Sign in' }).first().click({ timeout: 5000 });} catch (e) {console.log("No new user sign in page.");}
+    try {await page.getByRole('link', { name: 'Sign in', exact: true }).click({ timeout: 5000 })} catch (e) {console.log("No sign in button");}
+    try {await page.getByLabel('Email or phone').pressSequentially(email, { timeout: 5000 });} catch (e) {console.log("Already has email");}
+    await page.getByLabel('Password', { exact: true }).pressSequentially(password);
+    await page.getByRole('button', { name: 'Sign in' }).first().click();
+    // Save signed-in state to 'storageState.json'.
+    // await page.context().storageState({ path: 'storageState.json' });
+
+ 
+    const jobSearch = new JobSearch(page);
+    await jobSearch.searchJobWithFilters('python', 'Texas');
     
-    //await page.locator('.jobs-search-results__list-item').last().scrollIntoViewIfNeeded();
     await page.hover('.jobs-search-results-list');
     for (let i = 0; i < 7; i++) {
-      await page.mouse.wheel(0, 400);
-      // if (await page.isVisible('.artdeco-pagination__indicator')) {
-      //     break;
-      // }
+      await page.mouse.wheel(0, Math.floor(Math.random()*200+400));
     }
   
     let pages = await page.locator('ul.artdeco-pagination__pages .artdeco-pagination__indicator').last().innerText();
-    // page.on("console", msg => {
-    //   if (msg.type() === 'info') {
-    //       console.info(msg);
-    //   }    
-    // })
-    console.log("There are " + pages + " pages of jobs to apply to.");
-    //   await page.hover('.jobs-search__left-rail');
-    //   for (let i = 0; i < 7; i++) {
-    //     await page.mouse.wheel(0, -500);
-    //   }
+    console.log("There are " + pages.trim() + " pages of jobs to apply to.");
     console.log("Beginning applications...");
     var jobsApplied = 0;
-    var maxJobsApplied = 25;
+    var maxJobsApplied = 100;
     var jobsOnPage = 24;
-    var jobTitle = "";
-    var companyTitle = "";
-    var companyTitleRegex = /^(.*?) ·/;
+
     for (let h = 0; h < parseInt(pages); h++) {
       if (jobsApplied > maxJobsApplied) {
         console.log("You applied to " + jobsApplied + " " + searchTerm + " jobs!");
@@ -69,9 +64,9 @@ test('linkedin app bot', async ({ page }) => {
         let jobPage = jobsPerPage * h;
         console.log("You've applied to " + jobsApplied + " jobs!");
         console.log("Moving to next page...");
-        //await page.locator('ul.artdeco-pagination__pages > li').nth(h).click();
-        url = url + "&start=" + jobPage;
-        await page.goto(url);
+        await page.locator('ul.artdeco-pagination__pages > li').nth(h).click();
+        //url = url + "&start=" + jobPage;
+        //await page.goto(url);
         await page.hover('.jobs-search-results-list');
         for (let i = 0; i < 7; i++) {
           await page.mouse.wheel(0, 400);
@@ -82,29 +77,30 @@ test('linkedin app bot', async ({ page }) => {
       for (let i = 0; i < jobsOnPage; i++) {
         try {
           await page.hover('.jobs-search-results-list');
+          page.waitForTimeout(randomDelay());
           await page.mouse.wheel(0, 200);
           await page.locator('.job-card-list__title').nth(i).click();
           if (await page.isVisible('span.artdeco-button__text:has-text("Easy Apply")')) {
-            jobTitle = await page.locator('.job-details-jobs-unified-top-card__job-title-link').first().innerText({timeout: 5000});
-            companyTitle = await page.locator('.job-details-jobs-unified-top-card__primary-description-without-tagline').first().innerText({timeout: 5000});
-            const match = companyTitle.match(companyTitleRegex);
-            if (match != null) companyTitle = match[1];
-            await page.locator('span:has-text("Easy Apply")').first().click();
+            // jobTitle = await page.locator('.job-details-jobs-unified-top-card__job-title-link').first().innerText({timeout: 5000});
+            // companyTitle = await page.locator('.job-details-jobs-unified-top-card__primary-description-without-tagline').first().innerText({timeout: 5000});
+            // const match = companyTitle.match(companyTitleRegex);
+            // if (match != null) companyTitle = match[1];
+            await page.locator('span.artdeco-button__text:has-text("Easy Apply")').first().click();
           }
           else {
             console.log("Already applied...");
             continue;
           }
               
-          page.waitForTimeout(8000);
+          page.waitForTimeout(randomDelay());
           if (await page.isVisible('span.artdeco-button__text:has-text("Submit")')) {
             //await page.locator('span:has-text("Choose")').first().click();
             try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
             await page.locator('text=Submit Application').click({ timeout: 5000 });
             console.log("Job applied!");
             await jobsApplied++;
-            await page.locator('.artdeco-button__icon').first().click();
-            csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
+            await jobSearch.dismiss();
+            // csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
             continue;
           }
               
@@ -113,16 +109,17 @@ test('linkedin app bot', async ({ page }) => {
 
           if (progressValue == "50") {  
             try {
+              page.waitForTimeout(randomDelay());
               //await page.locator('span:has-text("Choose")').first().click();
               await page.locator('span:has-text("Review")').first().first().click();
               try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
               await page.locator('text=Submit Application').click({ timeout: 5000 });
               console.log("Job applied!");
               await jobsApplied++;
-              await page.locator('.artdeco-button__icon').first().click();
-              csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
+              await jobSearch.dismiss();
+              // csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
             } catch (e) {
-              await page.locator('.artdeco-button__icon').first().click();
+              await jobSearch.dismiss();
               await page.locator('span:has-text("Discard")').click();
               console.log("Can't apply");
               continue;
@@ -130,6 +127,7 @@ test('linkedin app bot', async ({ page }) => {
           }
           else if (progressValue == "33") {
             try {
+              page.waitForTimeout(randomDelay());
               //await page.locator('span:has-text("Choose")').first().click();
               await page.locator('span:has-text("Next")').first().click();
               await page.locator('span:has-text("Review")').first().first().click();
@@ -137,7 +135,7 @@ test('linkedin app bot', async ({ page }) => {
                 let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
                 let href = "https://www.linkedin.com/jobs/view/" + jobID;
                 console.log("Couldn't apply to job! Apply here: " + href);
-                await page.locator('.artdeco-button__icon').first().click();
+                await jobSearch.dismiss();
                 await page.locator('span:has-text("Discard")').click();
                 continue;
               }
@@ -145,10 +143,10 @@ test('linkedin app bot', async ({ page }) => {
               await page.locator('text=Submit Application').click({ timeout: 5000 });
               console.log("Job applied!");
               await jobsApplied++;
-              await page.locator('.artdeco-button__icon').first().click();
-              csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
+              await jobSearch.dismiss();
+              // csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
             } catch (e) {
-              await page.locator('.artdeco-button__icon').first().click();
+              await jobSearch.dismiss();
               await page.locator('span:has-text("Discard")').click();
               console.log("Can't apply");
               continue;
@@ -162,7 +160,7 @@ test('linkedin app bot', async ({ page }) => {
                 let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
                 let href = "https://www.linkedin.com/jobs/view/" + jobID;
                 console.log("Couldn't apply to job! Apply here: " + href);
-                await page.locator('.artdeco-button__icon').first().click();
+                await jobSearch.dismiss();
                 await page.locator('span:has-text("Discard")').click();
                 continue;
               }
@@ -171,7 +169,7 @@ test('linkedin app bot', async ({ page }) => {
                 let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
                 let href = "https://www.linkedin.com/jobs/view/" + jobID;
                 console.log("Couldn't apply to job! Apply here: " + href);
-                await page.locator('.artdeco-button__icon').first().click();
+                await jobSearch.dismiss();
                 await page.locator('span:has-text("Discard")').click();
                 continue;
               }
@@ -180,10 +178,10 @@ test('linkedin app bot', async ({ page }) => {
               await page.locator('text=Submit Application').click({ timeout: 5000 });
               console.log("Job applied!");
               await jobsApplied++;
-              await page.locator('.artdeco-button__icon').first().click();
-              csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
+              await jobSearch.dismiss();
+              // csvWriteLine(date, location, searchTerm, jobTitle, companyTitle, filePath);
             } catch (e) {
-              await page.locator('.artdeco-button__icon').first().click();
+              await jobSearch.dismiss();
               await page.locator('span:has-text("Discard")').click();
               console.log("Can't apply");
               continue;
@@ -192,13 +190,13 @@ test('linkedin app bot', async ({ page }) => {
           else {
             let jobID = await page.locator('xpath=//div[@data-job-id]').nth(i).getAttribute('data-job-id');
             let href = "https://www.linkedin.com/jobs/view/" + jobID;
-            await page.locator('.artdeco-button__icon').first().click();
+            await jobSearch.dismiss();
             console.log("5 pages or more. Moving on... Apply here if you would like: " + href);
             await page.locator('span:has-text("Discard")').click();
             continue;
           }
         } catch (e) {
-          await page.locator('.artdeco-button__icon').first().click();
+          await jobSearch.dismiss();
           console.log("Failed to apply to job");
           continue;
         }
@@ -223,6 +221,11 @@ async function csvWriteLine(date: string, location: string, searchTerm: string, 
       console.log('Job data saved.');
     }
   });
+}
+
+function randomDelay() {
+  const delay = Math.floor(Math.random()*3000) + 5000;
+  return delay;
 }
 
 async function unfollow(page) {
