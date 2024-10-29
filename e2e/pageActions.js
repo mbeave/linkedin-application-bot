@@ -3,10 +3,6 @@ export class JobSearch {
         this.page = page;
     }
 
-    async login() {
-        
-    }
-
     async searchForPosition(jobTitle) {
         const searchBox = this.page.getByRole('combobox', { name: 'Search by title, skill, or' });
         await searchBox.click();
@@ -24,7 +20,6 @@ export class JobSearch {
         await locationBox.pressSequentially(location);
     }
 
-    // Combine all actions into one method
     async searchJobWithFilters(jobTitle, location) {
         await this.page.getByRole('link', { name : 'Jobs', exact : true }).click();
         await this.searchForPosition(jobTitle);

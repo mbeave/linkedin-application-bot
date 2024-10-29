@@ -1,6 +1,6 @@
-import { test } from '@playwright/test';
+import { Browser, Page, test } from '@playwright/test';
 import { JobSearch } from './pageActions';
-const fs = require('fs');
+import fs from 'fs';
 
 const email = process.env.EMAIL as string;
 const password = process.env.PASSWORD as string;
@@ -9,36 +9,15 @@ const configFile = fs.readFileSync('config.json', 'utf-8');
 const config = JSON.parse(configFile);
 
 test('linkedin app bot', async ({ browser }) => {
-  // const context = await browser.newContext({ storageState: 'storageState.json' });
-  // const page = await context.newPage();
-  const page = await browser.newPage();
+  let page = await login(browser);
+  
   var totalJobsApplied = 0;
   const searchTermArray = config.searchTerms;
-  
-  let remote = "";
-  if (config.remote == true) {
-    remote = "&f_WT=2&geoId=103644278";
-  } else {
-    remote = "&geoId=103644278";
-  }
 
   for (let g = 0; g < searchTermArray.length; g++) {
     let searchTerm = searchTermArray[g]; 
     const jobsPerPage = 25;
 
-    var url = "https://www.linkedin.com/";
-
-    await page.goto(url);
-    
-    try {await page.getByRole('button', { name: 'Sign in' }).first().click({ timeout: 5000 });} catch (e) {console.log("No new user sign in page.");}
-    try {await page.getByRole('link', { name: 'Sign in', exact: true }).click({ timeout: 5000 })} catch (e) {console.log("No sign in button");}
-    try {await page.getByLabel('Email or phone').pressSequentially(email, { timeout: 5000 });} catch (e) {console.log("Already has email");}
-    await page.getByLabel('Password', { exact: true }).pressSequentially(password);
-    await page.getByRole('button', { name: 'Sign in' }).first().click();
-    // Save signed-in state to 'storageState.json'.
-    // await page.context().storageState({ path: 'storageState.json' });
-
- 
     const jobSearch = new JobSearch(page);
     await jobSearch.searchJobWithFilters('python', 'Texas');
     
@@ -231,4 +210,35 @@ function randomDelay() {
 async function unfollow(page) {
   try {await page.locator('label:has-text("Follow")').click({ timeout: 5000 });} catch (e) {console.log("No follow button");}
 
+}
+
+async function login(browser: Browser) {
+  var fileExists;
+  let page: any;
+
+  if (fs.existsSync('./storageState.json')) {
+    console.log('File exists');
+    fileExists = true;
+  } else {
+    console.log('File does not exist');
+    fileExists = false;
+  }
+  if (fileExists) {
+    const context = await browser.newContext({ storageState: 'storageState.json' });
+    page = await context.newPage();
+    var url = "https://www.linkedin.com/";
+    await page.goto(url);
+  } else {
+    page = await browser.newPage();
+    var url = "https://www.linkedin.com/";
+    await page.goto(url);
+    try {await page.getByRole('button', { name: 'Sign in' }).first().click({ timeout: 5000 });} catch (e) {console.log("No new user sign in page.");}
+    try {await page.getByRole('link', { name: 'Sign in', exact: true }).click({ timeout: 5000 })} catch (e) {console.log("No sign in button");}
+    try {await page.getByLabel('Email or phone').pressSequentially(email, { timeout: 5000 });} catch (e) {console.log("Already has email");}
+    await page.getByLabel('Password', { exact: true }).pressSequentially(password);
+    await page.getByRole('button', { name: 'Sign in' }).first().click();
+    await page.context().storageState({ path: 'storageState.json' });
+  }
+
+  return page;
 }
