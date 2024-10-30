@@ -26,7 +26,7 @@ I have no access to this info. This file is made so global-setup.ts (which will 
 
 The .env file you've created is listed in the .gitignore file and so won't ever be accidentally pushed to the GitHub repo with your info.
 
-Next, you have two options: you can run the bot in headed mode with:
+Next, you have three options: you can run the bot in headed mode with:
 
 ```
 npx playwright test --headed
@@ -37,32 +37,13 @@ Which will run the test with the browser letting you visually see it running. Or
 ```
 npx playwright test --debug
 ```
+Or, just regular:
+```
+npx playwright test
+```
+Which will run the bot in headless mode, which essentially means the bot will run the browser in the background and apply to jobs for you while you do other tasks.
 
-Debug mode is recommended because it lets you not only see the bot running in the browser, but also gives you a visual of the code as it's running through the [Playwright Inspector](https://playwright.dev/docs/debug). It also lets you pause and step through the code as well.
-
-Finally, after the bot has successfully logged in once, you can comment out this code `globalSetup: require.resolve('./global-setup'),` in the playwright.config.ts file. This will disable the global-setup.ts file so the bot doesn't log in each time. 
-
-Now, whenever the bot is run it will go straight to your logged in LinkedIn profile and to your search url. If, after a week or so, you find yourself logged out of LinkedIn when you run the bot, just uncomment that line of code in the playwright config file and run it again so it can store your authentication info in storageState.json.
 
 ### Running the Bot with your Search Terms and Settings
 
-In the file e2e/linkedin-bot.spec.ts (the main script) you will find four lines of code in the beginning:
-
-```
-  let searchTerm = "help%20desk"; 
-  let easyApply = "?f_AL=true";
-  let location = "United%20States"; 
-  let remote = "&f_WT=2&geoId=103644278";
-```
-
-The two main variables to worry about are *searchTerm* and *location*. *searchTerm* is where you put what job you are interested in (replaces spaces with "%20") and *location* is where you put the location of the jobs you want to apply to. If you don't want remote jobs just delete it from the url variable:
-
-```
-var url = "https://www.linkedin.com/jobs/search/" + easyApply + remote + "&keywords=" + searchTerm + "&location=" + location;
-```
-
-Like so: 
-
-```
-var url = "https://www.linkedin.com/jobs/search/" + easyApply + "&keywords=" + searchTerm + "&location=" + location;
-```
+Next, create a config.json file and copy the contents of config.json.tmp file into it. The information you put into this file will determine your search terms, how many jobs to apply to for each search term, the location of the jobs you would like to apply to, and whether you want the jobs to be remote, hybrid or any.
