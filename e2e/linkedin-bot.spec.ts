@@ -7,7 +7,6 @@ const password = process.env.PASSWORD as string;
 
 const configFile = fs.readFileSync('config.json', 'utf-8');
 const config = JSON.parse(configFile);
-const storageState = JSON.parse(fs.readFileSync('storageState.json', 'utf-8'));
 
 test('linkedin app bot', async ({ browser }) => {
   let page = await login(browser);
@@ -215,9 +214,12 @@ async function login(browser: Browser) {
   let page: any;
   
 
-  if (fs.existsSync('./storageState.json') || !checkJSessionExpiry()) {
+  if (fs.existsSync('./storageState.json')) {
     // console.log('File exists');
     fileExists = true;
+    if (!checkJSessionExpiry) {
+      fileExists = false;
+    }
   } else {
     // console.log('File does not exist');
     fileExists = false;
