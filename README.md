@@ -20,11 +20,11 @@ After cloning the repo into a directory of your choice, first run:
 npm install 
 ```
 
-Then, create a login.ts file and copy and paste the contents of login.ts.tmp file into it. Replace "email" and "password" with your LinkedIn login information (leave the quote marks though). 
+Then, create a .env file and copy and paste the contents of .env.tmp file into it. Replace "email" and "password" with your LinkedIn login information (leave out the quote marks though). 
 
 I have no access to this info. This file is made so global-setup.ts (which will run the first time you run the bot) has your login info, but it's still private to your system.
 
-The login.ts file you've created is listed in the .gitignore file and so won't ever be accidentally pushed to the GitHub repo with your info.
+The .env file you've created is listed in the .gitignore file and so won't ever be accidentally pushed to the GitHub repo with your info.
 
 Next, you have two options: you can run the bot in headed mode with:
 

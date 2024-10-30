@@ -7,6 +7,7 @@ const password = process.env.PASSWORD as string;
 
 const configFile = fs.readFileSync('config.json', 'utf-8');
 const config = JSON.parse(configFile);
+const storageState = JSON.parse(fs.readFileSync('storageState.json', 'utf-8'));
 
 test('linkedin app bot', async ({ browser }) => {
   let page = await login(browser);
@@ -212,12 +213,13 @@ async function unfollow(page) {
 async function login(browser: Browser) {
   var fileExists;
   let page: any;
+  
 
-  if (fs.existsSync('./storageState.json')) {
-    console.log('File exists');
+  if (fs.existsSync('./storageState.json') || !checkJSessionExpiry()) {
+    // console.log('File exists');
     fileExists = true;
   } else {
-    console.log('File does not exist');
+    // console.log('File does not exist');
     fileExists = false;
   }
   if (fileExists) {
@@ -238,4 +240,42 @@ async function login(browser: Browser) {
   }
 
   return page;
+}
+
+async function checkJSessionExpiry() {
+    try {
+        // Read the storage state file
+        const data = fs.readFileSync('./storageState.json', 'utf8');
+        const storageState = JSON.parse(data);
+
+        // Find the JSESSIONID cookie
+        const jsessionCookie = storageState.cookies.find(cookie => 
+            cookie.name.includes('JSESSIONID')
+        );
+
+        if (!jsessionCookie) {
+            console.log('JSESSIONID cookie not found');
+            return false;
+        }
+
+        // Get current Unix timestamp in seconds
+        const currentUnixTime = Math.floor(Date.now() / 1000);
+
+        // Get cookie expiration time (usually in seconds)
+        const cookieExpiry = jsessionCookie.expires;
+
+        console.log('Current Unix time:', currentUnixTime);
+        console.log('Cookie expires:', cookieExpiry);
+        console.log('Time until expiration:', cookieExpiry - currentUnixTime, 'seconds');
+
+        // Check if expired
+        return cookieExpiry > currentUnixTime;
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            console.log('Storage state file not found');
+        } else {
+            console.log('Error reading storage state:', error);
+        }
+        return false;
+    }
 }
