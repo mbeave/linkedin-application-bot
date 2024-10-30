@@ -1,9 +1,9 @@
 {
-    "searchTerms": [
-        "web%20developer",
-        "react",
-        "help%20desk"
-    ],
-    "location": "United%20States",
-    "remote": true
+    "searchTerms": {
+        "web developer": 5,
+        "react": 10,
+        "help desk: 25"
+    },
+    "location": "Colorado, United States",
+    "remote": "remote"
 }

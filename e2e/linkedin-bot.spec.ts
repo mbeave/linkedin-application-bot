@@ -12,29 +12,26 @@ test('linkedin app bot', async ({ browser }) => {
   let page = await login(browser);
   
   var totalJobsApplied = 0;
-  const searchTermArray = config.searchTerms;
+  const searchTerms = Object.keys(config.searchTerms);
 
-  for (let g = 0; g < searchTermArray.length; g++) {
-    let searchTerm = searchTermArray[g]; 
+  for (let g = 0; g < searchTerms.length; g++) {
+    let searchTerm = searchTerms[g]; 
     const jobsPerPage = 25;
 
     const jobSearch = new JobSearch(page);
-    await jobSearch.searchJobWithFilters('python', 'Texas');
+    await jobSearch.searchJobWithFilters(searchTerm, config.location, config.remote);
     
-    await page.hover('.jobs-search-results-list');
-    for (let i = 0; i < 7; i++) {
-      await page.mouse.wheel(0, Math.floor(Math.random()*200+400));
-    }
+    await jobSearch.scroll();
   
     let pages = await page.locator('ul.artdeco-pagination__pages .artdeco-pagination__indicator').last().innerText();
     console.log("There are " + pages.trim() + " pages of jobs to apply to.");
     console.log("Beginning applications...");
     var jobsApplied = 0;
-    var maxJobsApplied = 100;
+    var maxJobsApplied = config.searchTerms[searchTerm];
     var jobsOnPage = 24;
 
     for (let h = 0; h < parseInt(pages); h++) {
-      if (jobsApplied > maxJobsApplied) {
+      if (jobsApplied >= maxJobsApplied) {
         console.log("You applied to " + jobsApplied + " " + searchTerm + " jobs!");
         totalJobsApplied += jobsApplied;
         break;
@@ -46,18 +43,18 @@ test('linkedin app bot', async ({ browser }) => {
         await page.locator('ul.artdeco-pagination__pages > li').nth(h).click();
         //url = url + "&start=" + jobPage;
         //await page.goto(url);
-        await page.hover('.jobs-search-results-list');
-        for (let i = 0; i < 7; i++) {
-          await page.mouse.wheel(0, 400);
-        }
+        await jobSearch.scroll();
       }
       jobsOnPage = await page.locator('.job-card-list__title').count();
       console.log(jobsOnPage + " jobs on this page");
       for (let i = 0; i < jobsOnPage; i++) {
+        if (jobsApplied >= maxJobsApplied) {
+          break;
+        }
         try {
           await page.hover('.jobs-search-results-list');
           page.waitForTimeout(randomDelay());
-          await page.mouse.wheel(0, 200);
+          await page.mouse.wheel(0, Math.floor(Math.random()*100+100));
           await page.locator('.job-card-list__title').nth(i).click();
           if (await page.isVisible('span.artdeco-button__text:has-text("Easy Apply")')) {
             // jobTitle = await page.locator('.job-details-jobs-unified-top-card__job-title-link').first().innerText({timeout: 5000});
